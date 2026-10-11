@@ -1,7 +1,6 @@
 # Bayessche Optimierung: teure Simulationen mit wenigen Läufen – Streamlit-Demo
 
-<!-- TODO nach dem Deploy: direkt hierher den Live-Link setzen (Leerzeile davor und danach):
-**[→ Demo live ausprobieren](https://sebastianhanisch-bayes-opt-demo.streamlit.app/)** -->
+**[→ Demo live ausprobieren](https://sebastianhanisch-bayes-opt-demo.streamlit.app/)**
 
 Erstes Stück der **Bayessche-Optimierung-Linie** in der „Konzepte“-Reihe für die Website „Sebastian Hanisch – Operations Research und Machine Learning“.
 Es zeigt das Verfahren (Gauß-Prozess als Ersatzmodell, erwartete Verbesserung als Auswahlregel) erst an einer Testlandschaft und prüft es dann am **Terminal-Netz** aus der Linie
