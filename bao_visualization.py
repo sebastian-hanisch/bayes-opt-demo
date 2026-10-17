@@ -1,5 +1,6 @@
 """Plotly-Abbildungen (alle Achsen fest, damit Touch-Scrollen auf der Seite nicht am Diagramm hängen bleibt)."""
 
+import math
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -12,6 +13,23 @@ SURFACE = {   # je Landschaft: Farbbereich (Werte darüber zählen als "sehr hoc
     "branin": {"zmin": 0.0, "zmax": 100.0, "x": "x1", "y": "x2", "unit": "Funktionswert"},
     "terminal": {"zmin": 750.0, "zmax": 1500.0, "x": "Tempo Stapel", "y": "Plätze am Stapel", "unit": "EUR/h"},
 }
+
+
+def _ref_line(fig, value, text, position, axis, log=True, **line_kwargs):
+    """Referenzlinie mit Beschriftung auf einer logarithmischen Achse: die Linie liegt auf dem Datenwert, die Beschriftung braucht log10 des Werts
+    (add_hline und add_vline setzen beide auf denselben Wert, die Beschriftung sitzt dann falsch und dehnt die Achse); log=False für lineare Achsen."""
+    if log and not value > 0.0:
+        return
+    pos = math.log10(value) if log else value
+    top, left = "top" in position, "left" in position
+    if axis == "y":
+        fig.add_hline(y=value, **line_kwargs)
+        if text:
+            fig.add_annotation(xref="paper", yref="y", x=0 if left else 1, y=pos, text=text, showarrow=False, xanchor="left" if left else "right", yanchor="bottom" if top else "top")
+    else:
+        fig.add_vline(x=value, **line_kwargs)
+        if text:
+            fig.add_annotation(xref="x", yref="paper", x=pos, y=1 if top else 0, text=text, showarrow=False, xanchor="right" if left else "left", yanchor="top" if top else "bottom")
 
 
 def _fixed(fig, **layout):
@@ -70,8 +88,8 @@ def build_convergence_chart(a):
     if a.kind == "branin":
         fig.update_yaxes(title_text="Regret der Empfehlung (log)", type="log")
     else:
-        fig.add_hline(y=opt, line_dash="dash", line_color=C.COLOR_NEXT, annotation_text="wahres Optimum", annotation_position="bottom right")
-        fig.add_hline(y=a.rule[2], line_dash="dot", line_color=C.COLOR_BAD, annotation_text="Formel + Faustregel (0 Auswertungen)", annotation_position="top right")
+        _ref_line(fig, opt, "wahres Optimum", "bottom right", "y", line_dash="dash", line_color=C.COLOR_NEXT)
+        _ref_line(fig, a.rule[2], "Formel + Faustregel (0 Auswertungen)", "top right", "y", line_dash="dot", line_color=C.COLOR_BAD)
         fig.update_yaxes(title_text="Wahre Kosten der Empfehlung (EUR/h)", range=[opt * 0.98, max(a.rule[2], opt * 1.25) * 1.05])
     return _fixed(fig, height=360)
 
@@ -94,9 +112,9 @@ def build_sweep_chart(curves, n_max, optimum_value, kind, rule_cost=None):
     if kind == "branin":
         fig.update_yaxes(title_text="Regret, Median und 25 bis 75 % (log)", type="log")
     else:
-        fig.add_hline(y=optimum_value, line_dash="dash", line_color=C.COLOR_NEXT, annotation_text="wahres Optimum", annotation_position="bottom right")
+        _ref_line(fig, optimum_value, "wahres Optimum", "bottom right", "y", line_dash="dash", line_color=C.COLOR_NEXT)
         if rule_cost is not None:
-            fig.add_hline(y=rule_cost, line_dash="dot", line_color=C.COLOR_BAD, annotation_text="Formel + Faustregel (0 Auswertungen)", annotation_position="top right")
+            _ref_line(fig, rule_cost, "Formel + Faustregel (0 Auswertungen)", "top right", "y", line_dash="dot", line_color=C.COLOR_BAD)
         fig.update_yaxes(title_text="Wahre Kosten der Empfehlung, Median und 25 bis 75 % (EUR/h)", range=[optimum_value * 0.98, optimum_value * 1.3])
     return _fixed(fig, height=380)
 
