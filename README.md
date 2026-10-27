@@ -53,8 +53,7 @@ Alle Zahlen stehen in `tests/test_claims.py`. Medianwerte über je 20 feste Läu
 
 ## Ehrliche Grenzen
 
-- **Das Terminal ist ein Gegenbeispiel, kein Beleg für BO.** Das Tal der Kosten ist breit und flach; Wissen über das Netz (Formel plus eine Faustregel) schlägt hier jede Suche mit 40 Läufen. BO lohnt, wo
-  nichts über die Struktur bekannt ist (Branin, Hartmann6) oder die Struktur nicht aufgeschrieben ist.
+- **Das Terminal ist ein Gegenbeispiel, kein Beleg für BO.** In der Scheibe liegen bei 16 Auswertungen alle vier Verfahren im Median höchstens 4 % über dem Optimum; richtig teuer ist vor allem die Überlast. Wissen über das Netz (Formel plus eine Faustregel) schlägt im vollen Netz jede Suche mit 40 Läufen, gegen TPE knapp (771 gegen 788 EUR/h). BO liegt auf Branin und Hartmann6 vor dem Zufall (bei Rauschen erst mit mehr Budget); im vollen Netz ist BO ohne log nicht besser als Zufall.
 - **Die Faustregel ist die Entscheidung eines Kenners.** Sie wurde **nach** dem Blick auf das Ergebnis der Formel als naheliegende Ergänzung gewählt; ein Vergleich „Formel gegen Suche“ ohne sie
   hätte die Suche besser aussehen lassen, als sie ist. Das zeigt die Demo daher beide Formeln.
 - **TPE und Successive Halving sind einfache eigene Fassungen**, nicht Optuna oder Hyperband; ein Urteil über „TPE“ im Allgemeinen folgt daraus nicht.

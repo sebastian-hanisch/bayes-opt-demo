@@ -53,6 +53,21 @@ Weiter unten: fünf Experimente (**🔬**), **🚧 Wo die Annahmen enden** und d
 """
 )
 
+# erklaerseite:einfach:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/bayes-optimierung-erklaert.json, nicht von Hand ändern)
+with st.expander("💬 In einfachen Worten"):
+    st.markdown(
+        """
+Eine Simulation, die Minuten rechnet, kann man nur wenige Male starten, und ihr Ergebnis streut ein wenig. Die **Bayessche Optimierung** lernt deshalb aus den bisherigen Läufen ein **Ersatzmodell**: eine Karte, die für jede Einstellung einen vermuteten Wert und einen Spielraum angibt (ein Gauß-Prozess). Nahe an bereits gelaufenen Einstellungen ist der Spielraum klein, weit davon entfernt groß.
+
+Den nächsten Lauf setzt das Verfahren dorthin, wo die **erwartete Verbesserung** am größten ist: wo die Karte einen guten Wert vermutet oder wo noch fast nichts bekannt ist. So verbindet es Ausnutzen und Ausprobieren. Die Demo vergleicht das mit zufälligem Probieren und einer einfacheren Suche, erst an Testlandschaften, dann an einem Containerterminal.
+
+Am Terminal zeigt sich ein ehrlicher Haken: Wer das System kennt, etwa durch eine Formel samt Faustregel, braucht die Suche nicht unbedingt. Ein einzelner Lauf zeigt nur, was bei diesem Zufalls-Seed geschah; die Experimente weiter unten mitteln deshalb über viele feste Läufe.
+
+[Ausführlich und verständlich erklärt, mit Fachteil](https://sebastianhanisch.net/bayes-optimierung-erklaert.html)
+        """
+    )
+# erklaerseite:einfach:end
+
 with st.expander("So funktioniert Bayessche Optimierung", expanded=True):
     st.markdown(
         """
@@ -155,7 +170,7 @@ if (b_bo - b_opt) < 0.5 * (bfc["random"] - b_opt):
         f"**Ja, in diesem Lauf:** nach {settings.n} Auswertungen Regret {de(b_bo - b_opt, 2)} (BO) gegen {de(bfc['random'] - b_opt, 2)} (Zufall) und {de(bfc['tpe'] - b_opt, 2)} (TPE)."
     )
 elif (b_bo - b_opt) > 1.5 * (bfc["random"] - b_opt) + 0.05:
-    st.info(f"**Hier nicht:** Regret {de(b_bo - b_opt, 2)} (BO) gegen {de(bfc['random'] - b_opt, 2)} (Zufall). Bei wenigen Auswertungen und starkem Rauschen entscheidet oft das Startdesign.")
+    st.info(f"**Hier nicht:** Regret {de(b_bo - b_opt, 2)} (BO) gegen {de(bfc['random'] - b_opt, 2)} (Zufall). Das Ersatzmodell braucht erst einige Läufe (Experiment 1).")
 else:
     st.info(f"**Gleichauf:** Regret {de(b_bo - b_opt, 2)} (BO) gegen {de(bfc['random'] - b_opt, 2)} (Zufall).")
 st.caption("Ein einzelner Lauf zeigt nur, was bei diesem Seed passiert ist; Experiment 1 mittelt über 20 feste Läufe.")
@@ -172,7 +187,7 @@ st.info(
     f"bei {de(b30['random'], 2)}, {de(b30['tpe'], 2)} und {de(b30['bo'], 2)}. "
     + ("**BO liegt hier schon bei diesem Budget klar vorn.**" if bm["bo"] < 0.7 * bm["random"] else
        "**Bei diesem Budget ist der Vorsprung noch klein: das Ersatzmodell braucht erst einige Läufe, bevor es sich lohnt.**")
-    + (" Mit mehr Läufen wächst er." if b30["bo"] < 0.7 * b30["random"] else "")
+    + (f" Bei {C.N_MAX} Auswertungen liegt BO klar vorn." if b30["bo"] < 0.7 * b30["random"] else "")
 )
 
 st.subheader("🔬 Experiment 2: Sechs Eingaben statt zwei")
@@ -231,8 +246,8 @@ st.plotly_chart(build_sweep_chart(curves, C.N_MAX, t_opt, "terminal", t.rule[2])
 med = {k: float(curves[k]["median"][settings.n - 1]) for k in C.METHODS}
 st.info(
     f"Bei {settings.n} Auswertungen liegt der Median der Empfehlung bei {de(med['random'])} EUR/h (Zufall), {de(med['tpe'])} (TPE), {de(med['bo'])} (BO) und {de(med['bo_log'])} "
-    f"(BO mit log-Kosten); das Optimum liegt bei {de(t_opt)}. **Alle Verfahren liegen dicht beieinander**: Das Tal der Kosten ist breit und flach, schon zufällige Einstellungen "
-    "liegen nahe am Optimum. Nur die Überlast (Wahrheit oben, über 7 000 EUR/h) ist wirklich schlecht."
+    f"(BO mit log-Kosten); das Optimum liegt bei {de(t_opt)}. **Bei 16 Auswertungen liegen alle vier Verfahren im Median höchstens 4 % über dem Optimum**: kein Unterschied. "
+    "Richtig schlecht ist vor allem die Überlast (Wahrheit oben, über 7 000 EUR/h)."
 )
 
 st.subheader("🔬 Experiment 4: Kann man dem Ersatzmodell glauben?")
@@ -275,7 +290,7 @@ st.markdown(
     """
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
-| **Man weiß nichts über die Struktur** | Dann ist die Suche ihr Geld wert (Branin, Hartmann6). Weiß man etwas (Formel, Faustregel, Erfahrung), schlägt es oft jede Suche mit wenigen Läufen, wie das Terminal zeigt. | Formel als Vorwissen im Modell |
+| **Man weiß nichts über die Struktur** | Auf Branin und Hartmann6 liegt BO vor dem Zufall (bei Rauschen erst mit mehr Budget), im vollen Netz ist BO ohne log nicht besser als Zufall. Weiß man etwas (Formel, Faustregel, Erfahrung), kann es eine Suche mit wenigen Läufen schlagen, wie das Terminal zeigt. | Formel als Vorwissen im Modell |
 | **Die Zielfunktion ist glatt** | Klippen und Plateaus (hier: Überlast) verzerren die Skala; ein Gauß-Prozess mit gleichem Längenmaß überall passt schlecht. Der Logarithmus hilft nur teilweise. | Transformationen, Modelle mit wechselnder Glätte |
 | **Das Rauschen ist gleichmäßig** | Kurze Läufe streuen bei Last viel stärker als bei Leerlauf. Das Modell lernt **ein** Rauschen für alle Einstellungen. | Verrauschte Auswertungen |
 | **Wenige Entscheidungen** | Das Terminal-Gitter hat zwei, die Studie sechs, die Testfunktion Hartmann6 sechs. Wie weit das mit der Zahl der Entscheidungen trägt, ist hier nicht gemessen. | Hohe Dimensionen |
@@ -288,6 +303,31 @@ st.markdown(
 st.markdown("---")
 
 with st.expander("📐 Mathematische Formulierung"):
+    # erklaerseite:lesehilfe:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/bayes-optimierung-erklaert.json, nicht von Hand ändern)
+    st.markdown(
+        r"""
+**Lesehilfe.** Gegeben ist eine teure, verrauschte Zielgröße (die Kosten einer Einstellung $x$), die sich nur durch Simulationsläufe auswerten lässt. Gesucht ist die Einstellung mit den kleinsten Kosten innerhalb eines festen Budgets an Läufen. Das Ersatzmodell liefert für jede Einstellung einen vermuteten Wert $\mu(x)$ und eine Unsicherheit $s(x)$; die erwartete Verbesserung entscheidet, welche Einstellung als Nächstes läuft.
+
+| Symbol | Bedeutung |
+|---|---|
+| $x$, $x'$ | Einstellungen (Eingaben), z. B. Plätze am Stapel und Tempo des Stapels |
+| $k(x, x')$ | Kern (Matérn-5/2): wie ähnlich die Werte an zwei Einstellungen sind |
+| $r$ | Abstand zweier Einstellungen, jede Eingabe durch ihr Längenmaß geteilt |
+| $\ell_d$ | Längenmaß der Eingabe $d$: wie weit man sich bewegen muss, bis sich der Wert merklich ändert |
+| $\sigma_f^2$, $\sigma_n^2$ | Signalvarianz und Rauschvarianz |
+| $X$, $y$ | bisher gelaufene Einstellungen und ihre beobachteten Werte |
+| $K$ | Kernmatrix der Beobachtungen plus Rauschvarianz auf der Diagonalen |
+| $\mu(x)$, $s^2(x)$ | vorhergesagter Mittelwert und Varianz (Unsicherheit) des Ersatzmodells an $x$ |
+| $\log p(y \mid X)$ | Logarithmus der Randwahrscheinlichkeit, die beim Lernen der Längenmaße und Varianzen maximiert wird |
+| $f^*$ | bester bisheriger Wert (kleinster Mittelwert an den Beobachtungen) |
+| $z$ | Abstand von $f^*$ zum vorhergesagten Mittelwert, in Einheiten von $s$ |
+| $\Phi$, $\varphi$ | Verteilungsfunktion und Dichte der Standardnormalverteilung |
+| $\mathrm{EI}(x)$ | erwartete Verbesserung an $x$: Auswahlregel für den nächsten Lauf |
+
+[Schritt für Schritt erklärt, mit Herleitung und Literatur](https://sebastianhanisch.net/bayes-optimierung-erklaert.html#fachleute)
+        """
+    )
+    # erklaerseite:lesehilfe:end
     st.markdown(
         r"""
 **Ersatzmodell.** Gauß-Prozess mit Matérn-5/2-Kern, je Eingabe ein Längenmaß $\ell_d$ und Signalvarianz $\sigma_f^2$:
@@ -304,9 +344,9 @@ $$s^2(x) = k(x, x) - k(x, X)\,K^{-1} k(X, x)$$
 
 $$\log p(y \mid X) = -\tfrac12 y^\top K^{-1} y - \tfrac12 \log|K| - \tfrac n2 \log 2\pi$$
 
-**Erwartete Verbesserung** (Minimierung, bester Wert $f^\*$ = kleinster Mittelwert an den Beobachtungen), $z = (f^\* - \mu)/s$:
+**Erwartete Verbesserung** (Minimierung, bester Wert $f^{*}$ = kleinster Mittelwert an den Beobachtungen), $z = (f^{*} - \mu)/s$:
 
-$$\mathrm{EI}(x) = (f^\* - \mu)\,\Phi(z) + s\,\varphi(z)$$
+$$\mathrm{EI}(x) = (f^{*} - \mu)\,\Phi(z) + s\,\varphi(z)$$
 
 **Auswahl.** $x_{n+1} = \arg\max_x \mathrm{EI}(x)$ über die noch nicht gelaufenen Einstellungen.
 
