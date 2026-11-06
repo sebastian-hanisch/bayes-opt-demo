@@ -247,7 +247,7 @@ med = {k: float(curves[k]["median"][settings.n - 1]) for k in C.METHODS}
 st.info(
     f"Bei {settings.n} Auswertungen liegt der Median der Empfehlung bei {de(med['random'])} EUR/h (Zufall), {de(med['tpe'])} (TPE), {de(med['bo'])} (BO) und {de(med['bo_log'])} "
     f"(BO mit log-Kosten); das Optimum liegt bei {de(t_opt)}. **Bei 16 Auswertungen liegen alle vier Verfahren im Median höchstens 4 % über dem Optimum**: kein Unterschied. "
-    "Richtig schlecht ist vor allem die Überlast (Wahrheit oben, über 7 000 EUR/h)."
+    "Richtig schlecht ist vor allem die Überlast (Wahrheit oben, rund 7 000 EUR/h; das ist die Obergrenze der Kappung der Fahrzeit bei 300 min, kein Messwert)."
 )
 
 st.subheader("🔬 Experiment 4: Kann man dem Ersatzmodell glauben?")
