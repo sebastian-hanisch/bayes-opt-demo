@@ -293,7 +293,7 @@ st.markdown(
 | **Man weiß nichts über die Struktur** | Auf Branin und Hartmann6 liegt BO vor dem Zufall (bei Rauschen erst mit mehr Budget), im vollen Netz ist BO ohne log nicht besser als Zufall. Weiß man etwas (Formel, Faustregel, Erfahrung), kann es eine Suche mit wenigen Läufen schlagen, wie das Terminal zeigt. | Formel als Vorwissen im Modell |
 | **Die Zielfunktion ist glatt** | Klippen und Plateaus (hier: Überlast) verzerren die Skala; ein Gauß-Prozess mit gleichem Längenmaß überall passt schlecht. Der Logarithmus hilft nur teilweise. | Transformationen, Modelle mit wechselnder Glätte |
 | **Das Rauschen ist gleichmäßig** | Kurze Läufe streuen bei Last viel stärker als bei Leerlauf. Das Modell lernt **ein** Rauschen für alle Einstellungen. | Verrauschte Auswertungen |
-| **Wenige Entscheidungen** | Das Terminal-Gitter hat zwei, die Studie sechs, die Testfunktion Hartmann6 sechs. Wie weit das mit der Zahl der Entscheidungen trägt, ist hier nicht gemessen. | Hohe Dimensionen |
+| **Wenige Entscheidungen** | Das Terminal-Gitter hat zwei, die Studie sechs, die Testfunktion Hartmann6 sechs. Wie weit das mit der Zahl der Entscheidungen reicht, ist hier nicht gemessen. | Hohe Dimensionen |
 | **Das Ersatzmodell ist gut abgestimmt** | Längenmaße werden aus wenigen Läufen gelernt; die Unsicherheit ist nicht kalibriert (Experiment 4). | Die Wahl des Ersatzmodells |
 | **Läufe nacheinander** | Jede Auswertung wartet auf die vorige. Parallele Läufe brauchen andere Auswahlregeln. | Parallele Auswertungen |
 | **Es gibt keine Nebenbedingung** | Eine Grenze auf der Wartezeit würde die Suche an den Rand führen. | Nebenbedingungen |
