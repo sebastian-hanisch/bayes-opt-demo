@@ -14,7 +14,7 @@ Suche (TPE) und gegenüber Wissen über das System?** Die Antwort ist zweigeteil
 
 ## Modell
 
-- **Ersatzmodell:** Gauß-Prozess mit Matérn-5/2-Kern, je Eingabe ein Längenmaß, Rauschvarianz mitgelernt (Randwahrscheinlichkeit, L-BFGS-B mit drei festen Startpunkten); Ausgabe standardisiert.
+- **Ersatzmodell:** Gauß-Prozess mit Matérn-5/2-Kern, je Eingabe eine Längenskala, Rauschvarianz mitgelernt (Marginal Likelihood, L-BFGS-B mit drei festen Startpunkten); Ausgabe standardisiert.
 - **Auswahl:** erwartete Verbesserung (EI) über die noch nicht gelaufenen Einstellungen der Kandidatenmenge; Startdesign 5 zufällige Läufe (in der Studie 10). Empfehlung = beste Beobachtung.
 - **Vergleich:** Zufall (ohne Zurücklegen), TPE (eigene einfache Fassung: besten 25 % gegen die übrigen, Gauß-Kerne), BO mit log-Werten (nur dort, wo die Werte positiv sind).
 - **Landschaften:** (1) Branin auf einem 31 × 31-Gitter mit Gauß-Rauschen (0, 5, 20); (2) Hartmann6, sechs Eingaben, rauschfrei; (3) das Terminal als **Scheibe** (Plätze am Stapel
@@ -67,7 +67,7 @@ Alle Zahlen stehen in `tests/test_claims.py`. Medianwerte über je 20 feste Läu
 
 - **Kern:** Kern, Erwartete Verbesserung, Suchverfahren an Mini-Instanzen von Hand (`tests/test_algorithm.py`).
 - **Orakel** (`tests/test_oracle_bayes_opt.py`, anderer Rechenweg):
-  - Gauß-Prozess-Vorhersage gegen **scikit-learn** bei den gelernten Hyperparametern; Randwahrscheinlichkeit nach dem Lernen mindestens so hoch wie bei festen Standardwerten.
+  - Gauß-Prozess-Vorhersage gegen **scikit-learn** bei den gelernten Hyperparametern; Marginal Likelihood nach dem Lernen mindestens so hoch wie bei festen Standardwerten.
   - Erwartete Verbesserung gegen **numerische Integration** (scipy) und Monte-Carlo.
   - Simulator: **M/M/1** gegen die geschlossene Formel, exponentielles Tandem gegen die **Jackson-Formel**, Platzgrenze von Hand (Verweilzeiten 4 und 5 Minuten, Mittel 4,5).
   - Suche gegen **Aufzählung** kleiner Gitter.
@@ -97,7 +97,7 @@ Alle Zahlen stehen in `tests/test_claims.py`. Medianwerte über je 20 feste Läu
 ## Bewusst nicht umgesetzt
 
 - **Stetige Optimierung der Akquisitionsfunktion** (Mehrfachstart-Gradientenabstieg): die Kandidatenmenge ist endlich und aufzählbar, damit sich jedes Ergebnis exakt prüfen lässt.
-- **Andere Akquisitionsfunktionen** (UCB, Thompson, Wissensgradient, Entropie-Suche) und **andere Kerne**: eigene Themen, hier nur EI mit Matérn-5/2.
+- **Andere Akquisitionsfunktionen** (UCB, Thompson, Knowledge Gradient, Entropy Search) und **andere Kerne**: eigene Themen, hier nur EI mit Matérn-5/2.
 - **Echte Hyperband- oder Optuna-Läufe, BoTorch.**
 
 ## Lokal ausführen

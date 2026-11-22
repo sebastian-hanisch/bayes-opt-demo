@@ -1,4 +1,4 @@
-"""Kern der Demo: Gauß-Prozess (Matérn-5/2, je Eingabe ein Längenmaß), Expected Improvement, Suchverfahren auf einer endlichen Kandidatenmenge.
+"""Kern der Demo: Gauß-Prozess (Matérn-5/2, je Eingabe eine Längenskala), Expected Improvement, Suchverfahren auf einer endlichen Kandidatenmenge.
 
 Alles auf dem Einheitswürfel, Minimierung, nur numpy/scipy. Eine Einheit = eine Regel (DEMO-PLAYBOOK §1b): `matern52` (Kern),
 `GaussianProcess.fit/predict` (Lernen, Vorhersage), `expected_improvement` (Akquisition), `random_search`, `tpe_search`, `bo_search` (Auswahlregeln).
@@ -12,14 +12,14 @@ from scipy.stats import norm
 
 
 def matern52(A, B, lengthscales, variance):
-    """Matérn-5/2-Kern k(a, b) = σ² (1 + √5 r + 5r²/3) exp(−√5 r), r = Abstand mit je Eingabe eigenem Längenmaß."""
+    """Matérn-5/2-Kern k(a, b) = σ² (1 + √5 r + 5r²/3) exp(−√5 r), r = Abstand mit je Eingabe eigener Längenskala."""
     d = np.sqrt(np.maximum((((A[:, None, :] - B[None, :, :]) / lengthscales) ** 2).sum(-1), 0.0)) * np.sqrt(5.0)
     return variance * (1.0 + d + d * d / 3.0) * np.exp(-d)
 
 
 class GaussianProcess:
-    """Gauß-Prozess-Regression mit Matérn-5/2-Kern. Ausgabe wird standardisiert; Längenmaße, Signalvarianz und (optional) Rauschvarianz
-    werden durch Maximieren der Randwahrscheinlichkeit gelernt (L-BFGS-B, mehrere Startpunkte, feste Seeds)."""
+    """Gauß-Prozess-Regression mit Matérn-5/2-Kern. Ausgabe wird standardisiert; Längenskalen, Signalvarianz und (optional) Rauschvarianz
+    werden durch Maximieren der Marginal Likelihood gelernt (L-BFGS-B, mehrere Startpunkte, feste Seeds)."""
 
     LS_BOUNDS = (0.05, 10.0)
 

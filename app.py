@@ -73,7 +73,7 @@ with st.expander("So funktioniert Bayessche Optimierung", expanded=True):
         """
 Nach einem kleinen **Startdesign** (hier 5 zufällige Läufe) wiederholt sich je Schritt:
 
-1. **Lernen:** Der Gauß-Prozess passt Längenmaße und Rauschen an die bisherigen Läufe an. Ergebnis: für **jede** Einstellung ein Mittelwert und eine Unsicherheit.
+1. **Lernen:** Der Gauß-Prozess passt Längenskalen und Rauschen an die bisherigen Läufe an. Ergebnis: für **jede** Einstellung ein Mittelwert und eine Unsicherheit.
 2. **Bewerten:** Für jede noch nicht gelaufene Einstellung die **erwartete Verbesserung** gegenüber dem bisher Besten: groß, wo der Mittelwert niedrig **oder** die Unsicherheit hoch ist.
 3. **Ausführen:** Der Lauf mit der größten erwarteten Verbesserung wird gerechnet, sein Ergebnis kommt zu den Daten.
 4. **Empfehlen:** Nach dem Budget gilt die beste Beobachtung als Empfehlung. Bewertet wird sie an der **Wahrheit**, nicht am verrauschten Messwert.
@@ -291,10 +291,10 @@ st.markdown(
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
 | **Man weiß nichts über die Struktur** | Auf Branin und Hartmann6 liegt BO vor dem Zufall (bei Rauschen erst mit mehr Budget), im vollen Netz ist BO ohne log nicht besser als Zufall. Weiß man etwas (Formel, Faustregel, Erfahrung), kann es eine Suche mit wenigen Läufen schlagen, wie das Terminal zeigt. | Formel als Vorwissen im Modell |
-| **Die Zielfunktion ist glatt** | Klippen und Plateaus (hier: Überlast) verzerren die Skala; ein Gauß-Prozess mit gleichem Längenmaß überall passt schlecht. Der Logarithmus hilft nur teilweise. | Transformationen, Modelle mit wechselnder Glätte |
+| **Die Zielfunktion ist glatt** | Klippen und Plateaus (hier: Überlast) verzerren die Skala; ein Gauß-Prozess mit gleicher Längenskala überall passt schlecht. Der Logarithmus hilft nur teilweise. | Transformationen, Modelle mit wechselnder Glätte |
 | **Das Rauschen ist gleichmäßig** | Kurze Läufe streuen bei Last viel stärker als bei Leerlauf. Das Modell lernt **ein** Rauschen für alle Einstellungen. | Verrauschte Auswertungen |
 | **Wenige Entscheidungen** | Das Terminal-Gitter hat zwei, die Studie sechs, die Testfunktion Hartmann6 sechs. Wie weit das mit der Zahl der Entscheidungen reicht, ist hier nicht gemessen. | Hohe Dimensionen |
-| **Das Ersatzmodell ist gut abgestimmt** | Längenmaße werden aus wenigen Läufen gelernt; die Unsicherheit ist nicht kalibriert (Experiment 4). | Die Wahl des Ersatzmodells |
+| **Das Ersatzmodell ist gut abgestimmt** | Längenskalen werden aus wenigen Läufen gelernt; die Unsicherheit ist nicht kalibriert (Experiment 4). | Die Wahl des Ersatzmodells |
 | **Läufe nacheinander** | Jede Auswertung wartet auf die vorige. Parallele Läufe brauchen andere Auswahlregeln. | Parallele Auswertungen |
 | **Es gibt keine Nebenbedingung** | Eine Grenze auf der Wartezeit würde die Suche an den Rand führen. | Nebenbedingungen |
     """
@@ -312,13 +312,13 @@ with st.expander("📐 Mathematische Formulierung"):
 |---|---|
 | $x$, $x'$ | Einstellungen (Eingaben), z. B. Plätze am Stapel und Tempo des Stapels |
 | $k(x, x')$ | Kern (Matérn-5/2): wie ähnlich die Werte an zwei Einstellungen sind |
-| $r$ | Abstand zweier Einstellungen, jede Eingabe durch ihr Längenmaß geteilt |
-| $\ell_d$ | Längenmaß der Eingabe $d$: wie weit man sich bewegen muss, bis sich der Wert merklich ändert |
+| $r$ | Abstand zweier Einstellungen, jede Eingabe durch ihre Längenskala geteilt |
+| $\ell_d$ | Längenskala der Eingabe $d$: wie weit man sich bewegen muss, bis sich der Wert merklich ändert |
 | $\sigma_f^2$, $\sigma_n^2$ | Signalvarianz und Rauschvarianz |
 | $X$, $y$ | bisher gelaufene Einstellungen und ihre beobachteten Werte |
 | $K$ | Kernmatrix der Beobachtungen plus Rauschvarianz auf der Diagonalen |
 | $\mu(x)$, $s^2(x)$ | vorhergesagter Mittelwert und Varianz (Unsicherheit) des Ersatzmodells an $x$ |
-| $\log p(y \mid X)$ | Logarithmus der Randwahrscheinlichkeit, die beim Lernen der Längenmaße und Varianzen maximiert wird |
+| $\log p(y \mid X)$ | Logarithmus der Marginal Likelihood, die beim Lernen der Längenskalen und Varianzen maximiert wird |
 | $f^*$ | bester bisheriger Wert (kleinster Mittelwert an den Beobachtungen) |
 | $z$ | Abstand von $f^*$ zum vorhergesagten Mittelwert, in Einheiten von $s$ |
 | $\Phi$, $\varphi$ | Verteilungsfunktion und Dichte der Standardnormalverteilung |
@@ -330,7 +330,7 @@ with st.expander("📐 Mathematische Formulierung"):
     # erklaerseite:lesehilfe:end
     st.markdown(
         r"""
-**Ersatzmodell.** Gauß-Prozess mit Matérn-5/2-Kern, je Eingabe ein Längenmaß $\ell_d$ und Signalvarianz $\sigma_f^2$:
+**Ersatzmodell.** Gauß-Prozess mit Matérn-5/2-Kern, je Eingabe eine Längenskala $\ell_d$ und Signalvarianz $\sigma_f^2$:
 
 $$k(x, x') = \sigma_f^2\Bigl(1 + \sqrt5\, r + \tfrac53 r^2\Bigr)\exp\bigl(-\sqrt5\, r\bigr), \qquad r = \sqrt{\textstyle\sum_d (x_d - x'_d)^2/\ell_d^2}$$
 
@@ -340,7 +340,7 @@ $$\mu(x) = k(x, X)\,K^{-1} y$$
 
 $$s^2(x) = k(x, x) - k(x, X)\,K^{-1} k(X, x)$$
 
-**Lernen.** Längenmaße, $\sigma_f^2$ und $\sigma_n^2$ maximieren die Randwahrscheinlichkeit (Ausgabe vorher standardisiert):
+**Lernen.** Längenskalen, $\sigma_f^2$ und $\sigma_n^2$ maximieren die Marginal Likelihood (Ausgabe vorher standardisiert):
 
 $$\log p(y \mid X) = -\tfrac12 y^\top K^{-1} y - \tfrac12 \log|K| - \tfrac n2 \log 2\pi$$
 
@@ -353,7 +353,7 @@ $$\mathrm{EI}(x) = (f^{*} - \mu)\,\Phi(z) + s\,\varphi(z)$$
 **TPE (Vergleich).** Die besten 25 % der Beobachtungen bilden die Dichte $l$, die übrigen $g$ (Gauß-Kerne); gewählt wird $\arg\max_x l(x)/g(x)$.
 
 **Literatur.** D. R. Jones, M. Schonlau, W. J. Welch (1998), *Efficient Global Optimization of Expensive Black-Box Functions*, Journal of Global Optimization 13, 455–492 (EI für
-Gauß-Prozesse); C. E. Rasmussen, C. K. I. Williams (2006), *Gaussian Processes for Machine Learning*, MIT Press (Kern, Randwahrscheinlichkeit); J. Bergstra, R. Bardenet, Y. Bengio,
+Gauß-Prozesse); C. E. Rasmussen, C. K. I. Williams (2006), *Gaussian Processes for Machine Learning*, MIT Press (Kern, Marginal Likelihood); J. Bergstra, R. Bardenet, Y. Bengio,
 B. Kégl (2011), *Algorithms for Hyper-Parameter Optimization*, NeurIPS (TPE).
         """
     )
